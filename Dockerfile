@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
@@ -14,9 +14,21 @@ RUN npm ci
 # Copiar o resto do código
 COPY . .
 
-# Expor a porta (configurável via variável de ambiente)
+# Gerar o build estático de produção do app web
+RUN npx expo export -p web
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Servidor estático leve para servir o build gerado
+RUN npm install -g serve
+
+COPY --from=build /app/dist ./dist
+
+# Porta (configurável via variável de ambiente)
 ENV PORT=8080
 EXPOSE 8080
 
-# Comando para iniciar o app web em produção
-CMD ["sh", "-c", "npx expo start --web --port $PORT --host 0.0.0.0"]
+# Servir o build estático em produção
+CMD ["sh", "-c", "serve -s dist -l $PORT"]

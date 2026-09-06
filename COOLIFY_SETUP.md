@@ -30,12 +30,12 @@ O arquivo `app.json` já está configurado com:
    
 3. **Build Command** (se necessário):
    ```bash
-   npm install
+   npm ci && npx expo export -p web
    ```
 
 4. **Start Command**:
    ```bash
-   npx expo start --web --port $PORT
+   npx serve -s dist -l $PORT
    ```
 
 ## APIs Utilizadas
