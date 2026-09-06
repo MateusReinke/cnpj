@@ -71,6 +71,8 @@ Seu app já está 100% configurado para deploy no Coolify. Todos os arquivos nec
 | Variável | Valor | Descrição |
 |----------|-------|-----------|
 | `BASE_URL` | `https://seu-dominio.coolify.app` | URL base para callbacks |
+| `OPENAI_API_KEY` | `sk-...` | Ativa sugestões de nota fiscal por IA real (OpenAI). Sem essa variável, o app usa uma base de regras local gratuita. Também pode ser definida direto na aba "IA" do app, sem redeploy. |
+| `OPENAI_MODEL` | `gpt-4o-mini` | Modelo da OpenAI a usar (padrão `gpt-4o-mini` se não definido). |
 
 ### Domínio Personalizado (Opcional)
 

@@ -29,16 +29,26 @@ Este é um aplicativo React Native (Expo) desenvolvido para ajudar Microempreend
 - Total de CNPJs ativos
 - Total de contas a pagar
 - Total de notas fiscais emitidas
+- Alertas automáticos de contas atrasadas e CNPJs perto do limite anual do MEI
 - Resumo geral do negócio
+
+### 5. **IA de Sugestão de Nota Fiscal**
+- Descreva o serviço em texto livre e receba tipo de nota, código de serviço (LC 116/2003), alíquota de ISS estimada e observações
+- Funciona **sem nenhuma configuração**, usando uma base de regras local gratuita
+- Se você configurar uma chave da OpenAI (nas variáveis de ambiente ou direto na aba "IA" do app), as sugestões passam a ser geradas por IA de verdade
+
+### Dados salvos automaticamente
+Tudo o que você cadastra (CNPJs, contas, notas e a configuração de IA) fica salvo no navegador (`localStorage`) e continua lá mesmo depois de fechar ou atualizar a página. Não há um banco de dados compartilhado — os dados ficam por navegador/dispositivo.
 
 ## Como Usar
 
 ### Navegação
-O app possui uma barra de navegação inferior com 4 opções:
-- 🏠 **Home**: Dashboard com visão geral
-- 📋 **CNPJs**: Gerencie seus CNPJs
+O app possui uma barra de navegação inferior com 5 opções:
+- 🏠 **Home**: Dashboard com visão geral e alertas
+- 📋 **CNPJs**: Gerencie seus CNPJs (consulta automática por CNPJ)
 - 💰 **Contas**: Controle suas contas a pagar
 - 📄 **Notas**: Emita e acompanhe notas fiscais
+- 🤖 **IA**: Sugestão de nota fiscal por descrição do serviço
 
 ### Adicionar Novo Item
 Em cada tela, clique no botão verde "+ Novo" para abrir o formulário modal e adicionar um novo registro.
@@ -57,7 +67,13 @@ npm run android
 
 # Rodar no iOS (requer macOS)
 npm run ios
+
+# Build de produção (gera a pasta dist/) + servidor local com a API de IA
+npm run build:web
+npm run server
 ```
+
+Para usar IA real (OpenAI) localmente, veja as variáveis em `.env.example` e rode com elas definidas, por exemplo: `OPENAI_API_KEY=sk-... npm run server`.
 
 ## Tecnologias Utilizadas
 
@@ -70,11 +86,24 @@ npm run ios
 
 ```
 .
-├── App.tsx          # Código principal do app
-├── package.json     # Dependências e scripts
-├── tsconfig.json    # Configuração TypeScript
-├── Dockerfile       # Build para deploy (Coolify)
-└── assets/          # Ícones e imagens
+├── App.tsx                  # Componente principal do app (telas e estado)
+├── types.ts                 # Interfaces compartilhadas (CNPJ, ContaPagar, ...)
+├── theme.ts                 # Cores, espaçamentos e constantes visuais
+├── server.js                # Servidor de produção: serve o app e a API de IA
+├── server.package.json      # Manifesto enxuto (só Express) da imagem Docker final
+├── services/
+│   ├── cnpjApi.ts           # Consulta e normalização de dados de CNPJ
+│   ├── aiSugestao.ts        # Chamada ao servidor para sugestão de nota via IA
+│   └── storage.ts           # Persistência local (AsyncStorage/localStorage)
+├── shared/
+│   └── notaKnowledgeBase.js # Base de regras local (usada pelo server e pelo app)
+├── components/
+│   └── Toast.tsx            # Notificações não-bloqueantes de sucesso/erro
+├── package.json              # Dependências e scripts
+├── tsconfig.json              # Configuração TypeScript
+├── Dockerfile                 # Build para deploy (Coolify)
+├── .env.example                # Variáveis de ambiente (PORT, OPENAI_*)
+└── assets/                    # Ícones e imagens
 ```
 
 ## Observações Importantes para MEI
@@ -101,13 +130,14 @@ npm run ios
 
 ## Próximas Melhorias Sugeridas
 
-- [ ] Persistência de dados (AsyncStorage ou banco de dados)
-- [ ] Validação de CNPJ
+- [x] Persistência de dados (localStorage via AsyncStorage)
+- [x] IA real de sugestão de nota fiscal (OpenAI, configurável)
+- [x] Alertas de contas atrasadas e limite de faturamento do MEI
+- [ ] Validação completa de CNPJ (dígito verificador)
 - [ ] Integração com APIs de emissão de notas fiscais
 - [ ] Relatórios e gráficos
-- [ ] Lembretes de vencimento
 - [ ] Exportação de dados (PDF, Excel)
-- [ ] Autenticação e sincronização em nuvem
+- [ ] Autenticação e sincronização em nuvem (banco de dados compartilhado entre dispositivos)
 
 ## Licença
 

@@ -1,0 +1,7 @@
+{
+  "name": "mei-manager-server",
+  "private": true,
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

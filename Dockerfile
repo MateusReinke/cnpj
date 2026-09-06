@@ -21,14 +21,22 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Servidor estático leve para servir o build gerado
-RUN npm install -g serve
+# Manifesto enxuto só com o Express, para não carregar as ferramentas
+# de build do Expo/React Native na imagem final de produção.
+COPY server.package.json ./package.json
+RUN npm install --omit=dev
 
 COPY --from=build /app/dist ./dist
+COPY server.js ./server.js
+COPY shared ./shared
 
 # Porta (configurável via variável de ambiente)
 ENV PORT=8080
 EXPOSE 8080
 
-# Servir o build estático em produção
-CMD ["sh", "-c", "serve -s dist -l $PORT"]
+# OpenAI (opcional) — sem essas variáveis o app usa uma base de regras
+# local gratuita para sugerir notas fiscais. Configure em runtime no Coolify.
+# ENV OPENAI_API_KEY=
+# ENV OPENAI_MODEL=gpt-4o-mini
+
+CMD ["node", "server.js"]
